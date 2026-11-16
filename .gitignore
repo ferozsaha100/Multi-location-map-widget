@@ -1,0 +1,13 @@
+# Test output and dependencies
+/tests/.out/
+/tests/node_modules/
+/tests/package-lock.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Built release archives
+*.zip

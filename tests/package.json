@@ -1,0 +1,13 @@
+{
+  "name": "ave-multi-location-map-tests",
+  "private": true,
+  "description": "Test suite for the AVE Multi-Location Map WordPress plugin (not shipped with the plugin).",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "test": "bash run.sh",
+    "test:unit": "bash run.sh --no-browser"
+  },
+  "devDependencies": {
+    "playwright": "1.48.2"
+  }
+}

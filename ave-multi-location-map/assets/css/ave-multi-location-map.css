@@ -1,0 +1,85 @@
+.ave-mlm-wrapper {
+	width: 100%;
+}
+
+.ave-mlm-canvas {
+	width: 100%;
+	height: 480px;
+}
+
+/* Editor-only geocoding status (never rendered for visitors). */
+.ave-mlm-notice {
+	margin: 0 0 10px;
+	padding: 10px 12px;
+	border-left: 4px solid #2e7d32;
+	background: #edf7ee;
+	color: #1e3a1f;
+	font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.ave-mlm-notice--warn {
+	border-left-color: #b26a00;
+	background: #fff6e5;
+	color: #4a2f00;
+}
+
+/* Google InfoWindow content — scoped classes, styled via Elementor Style tab
+   using the same selectors declared in the widget's typography/color controls. */
+.ave-mlm-infowindow {
+	min-width: 200px;
+	max-width: 260px;
+	font-family: inherit;
+}
+
+.ave-mlm-iw-title {
+	font-size: 16px;
+	font-weight: 600;
+	margin: 0 0 6px;
+	line-height: 1.3;
+}
+
+.ave-mlm-iw-body {
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.ave-mlm-iw-address,
+.ave-mlm-iw-phone,
+.ave-mlm-iw-link {
+	margin: 0 0 4px;
+}
+
+.ave-mlm-iw-link:last-child,
+.ave-mlm-iw-phone:last-child {
+	margin-bottom: 0;
+}
+
+.ave-mlm-iw-body a {
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.ave-mlm-iw-body a:hover {
+	text-decoration: underline;
+}
+
+.ave-mlm-iw-link {
+	margin-top: 8px;
+}
+
+.ave-mlm-iw-btn {
+	display: inline-block;
+	color: #ffffff;
+	background-color: #0B22C7;
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none !important;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ave-mlm-iw-btn:hover {
+	background-color: #08189c;
+	color: #ffffff;
+}

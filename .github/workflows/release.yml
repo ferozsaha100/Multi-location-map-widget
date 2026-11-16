@@ -1,0 +1,69 @@
+name: Release
+
+# Push a tag like v2.4.2 to test, package and publish the plugin.
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  release:
+    name: Build zip and publish release
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag matches the plugin version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          MAIN=ave-multi-location-map/ave-multi-location-map.php
+          HEADER=$(grep -m1 -E '^[[:space:]]*\*[[:space:]]*Version:' "$MAIN" | awk '{print $NF}')
+          CONST=$(grep -oP "define\( 'AVE_MLM_VERSION', '\K[^']+" "$MAIN")
+          STABLE=$(grep -m1 '^Stable tag:' ave-multi-location-map/readme.txt | awk '{print $NF}')
+          echo "tag=$TAG header=$HEADER constant=$CONST stable_tag=$STABLE"
+          if [ "$TAG" != "$HEADER" ] || [ "$TAG" != "$CONST" ] || [ "$TAG" != "$STABLE" ]; then
+            echo "::error::Tag v$TAG does not match the plugin version (header $HEADER, AVE_MLM_VERSION $CONST, Stable tag $STABLE)."
+            exit 1
+          fi
+          grep -q "^## \[$TAG\]" CHANGELOG.md || { echo "::error::CHANGELOG.md has no entry for $TAG."; exit 1; }
+
+      - name: Build the installable zip
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          zip -qr -X "ave-multi-location-map-${VERSION}.zip" ave-multi-location-map
+          unzip -l "ave-multi-location-map-${VERSION}.zip" | tail -n 1
+          unzip -l "ave-multi-location-map-${VERSION}.zip" | awk 'NR>3 {print $4}' | grep -v '^ave-multi-location-map/' | grep -v '^$' && { echo "::error::Unexpected files outside the plugin folder."; exit 1; } || true
+
+      - name: Write release notes
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          {
+            echo "## Install"
+            echo
+            echo "Download **ave-multi-location-map-${VERSION}.zip** below, then in WordPress go to **Plugins → Add New → Upload Plugin**. Updating? Choose **Replace current with uploaded**; your maps and settings are kept."
+            echo
+            echo "## What's changed"
+            echo
+            awk -v v="$VERSION" '$0 ~ "^## \\[" v "\\]" { found = 1; next } found && /^## \[/ { exit } found' CHANGELOG.md
+            echo
+            echo "Full history: [CHANGELOG.md](https://github.com/${GITHUB_REPOSITORY}/blob/main/CHANGELOG.md) · Docs: [README](https://github.com/${GITHUB_REPOSITORY}#readme)"
+          } > release-notes.md
+          cat release-notes.md
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" "ave-multi-location-map-${VERSION}.zip" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "AVE Multi-Location Map ${VERSION}" \
+            --notes-file release-notes.md \
+            --verify-tag \
+            --latest

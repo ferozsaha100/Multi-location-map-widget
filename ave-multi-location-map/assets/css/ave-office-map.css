@@ -1,0 +1,619 @@
+/* AVE Office Map (AVE Multi-Location Map 2.0) */
+
+.ave-om {
+	--ave-om-height: 520px;
+	--ave-om-pin: #1F2937;
+	--ave-om-pin-active: #0B22C7;
+	--ave-om-pin-text: #FFFFFF;
+	--ave-om-pin-size: 32px;
+	--ave-om-popup-bg: #FFFFFF;
+	--ave-om-popup-width: 300px;
+	--ave-om-popup-radius: 8px;
+	--ave-om-list-width: 340px;
+	--ave-om-divider: #E5E7EB;
+	--ave-om-item-active-bg: #EEF1FD;
+	position: relative;
+	width: 100%;
+}
+
+.ave-om__body {
+	position: relative;
+	overflow: hidden;
+}
+
+.ave-om__map {
+	position: relative;
+	z-index: 0; /* Own stacking context: map panes never cover sticky headers. */
+	width: 100%;
+	height: var(--ave-om-height);
+	background: #E9ECEF;
+}
+
+.ave-om .ave-om__map.leaflet-container {
+	font: inherit;
+}
+
+/* ---------- Layout 2: list + map ---------- */
+
+.ave-om--list .ave-om__body {
+	display: grid;
+	grid-template-columns: var(--ave-om-list-width) minmax(0, 1fr);
+}
+
+.ave-om__list {
+	position: relative;
+	height: var(--ave-om-height);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	background: #FFFFFF;
+	border-right: 1px solid var(--ave-om-divider);
+}
+
+.ave-om .ave-om__items {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.ave-om .ave-om__item {
+	display: flex;
+	gap: 12px;
+	margin: 0;
+	padding: 16px 18px;
+	border-bottom: 1px solid var(--ave-om-divider);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.ave-om .ave-om__item:hover,
+.ave-om .ave-om__item.is-active {
+	background-color: var(--ave-om-item-active-bg);
+}
+
+.ave-om__num {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	margin-top: 1px;
+	border-radius: 50%;
+	background: var(--ave-om-pin);
+	color: var(--ave-om-pin-text);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+	transition: background-color 0.15s ease;
+}
+
+.ave-om__item.is-active .ave-om__num {
+	background: var(--ave-om-pin-active);
+}
+
+.ave-om__text {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* Theme-proof reset: themes style every <button>. Colours live on the spans. */
+.ave-om button.ave-om__select,
+.ave-om button.ave-om__select:hover,
+.ave-om button.ave-om__select:focus {
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	font: inherit;
+	letter-spacing: inherit;
+	text-transform: none;
+	text-align: left;
+	color: inherit;
+	cursor: pointer;
+}
+
+.ave-om button.ave-om__select:focus-visible {
+	outline: 2px solid var(--ave-om-pin-active);
+	outline-offset: 3px;
+}
+
+.ave-om__name {
+	display: block;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.35;
+	color: #111827;
+}
+
+.ave-om__address {
+	display: block;
+	margin-top: 4px;
+	font-size: 14px;
+	line-height: 1.5;
+	color: #4B5563;
+}
+
+/* ---------- Button (popup + list) ---------- */
+
+.ave-om a.ave-om__btn {
+	display: inline-block;
+	margin-top: 10px;
+	padding: 8px 16px;
+	border-radius: 4px;
+	background-color: #0B22C7;
+	color: #FFFFFF;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ave-om a.ave-om__btn:hover,
+.ave-om a.ave-om__btn:focus-visible {
+	background-color: #08189C;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+/* ---------- Phone numbers (popup + list) ---------- */
+
+.ave-om-phones {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ave-om-phone-gap, 6px);
+	margin-top: 10px;
+}
+
+/* More air between entries once they carry a person's name. */
+.ave-om-phones--people {
+	gap: var(--ave-om-phone-gap, 12px);
+}
+
+/* Grid keeps the icon on the number's line, with the name above both:
+     .     name
+     icon  number + role label                                          */
+.ave-om-phone {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	grid-template-areas: ". name" "icon body";
+	column-gap: 8px;
+	align-items: start;
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.ave-om-phone__name {
+	grid-area: name;
+	display: block;
+	margin-bottom: 1px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.35;
+	color: #111827;
+}
+
+.ave-om-phone__icon {
+	grid-area: icon;
+	width: 14px;
+	height: 14px;
+	margin-top: 3px;
+	color: var(--ave-om-phone-icon, #6B7280);
+}
+
+.ave-om:not(.ave-om--phone-icon) .ave-om-phone__icon {
+	display: none;
+}
+
+.ave-om:not(.ave-om--phone-icon) .ave-om-phone {
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-areas: "name" "body";
+}
+
+.ave-om-phone__body {
+	grid-area: body;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 2px 8px;
+	min-width: 0;
+}
+
+.ave-om a.ave-om-phone__number {
+	color: #111827;
+	font-weight: 500;
+	text-decoration: none;
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+}
+
+.ave-om a.ave-om-phone__number:hover,
+.ave-om a.ave-om-phone__number:focus-visible {
+	color: #0B22C7;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.ave-om-phone__label {
+	display: inline-block;
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+/* Small caps text */
+.ave-om--label-text .ave-om-phone__label {
+	color: var(--ave-om-label-text, #6B7280);
+	letter-spacing: 0.08em;
+}
+
+/* Pill: translucent tint + hairline ring, so it stays visible on the
+   highlighted (tinted) list row too. */
+.ave-om--label-pill .ave-om-phone__label {
+	padding: 3px 7px;
+	border-radius: 999px;
+	background: var(--ave-om-pill-bg, rgba(11, 34, 199, 0.08));
+	color: var(--ave-om-label-text, #0B22C7);
+	letter-spacing: 0.04em;
+	box-shadow: inset 0 0 0 1px rgba(11, 34, 199, 0.16);
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+/* Right of the number, aligned to its top edge (superscript-style). */
+.ave-om--label-right-top .ave-om-phone__body {
+	align-items: flex-start;
+}
+
+.ave-om--label-right-top.ave-om--label-text .ave-om-phone__label {
+	margin-top: 1px;
+}
+
+.ave-om--label-right-top.ave-om--label-pill .ave-om-phone__label {
+	margin-top: -3px; /* Raised, superscript-style. */
+}
+
+/* Room for the raised pill under a name, so it never touches descenders. */
+.ave-om--label-right-top.ave-om--label-pill .ave-om-phone__name {
+	margin-bottom: 4px;
+}
+
+/* Right of the number, aligned to its bottom edge. */
+.ave-om--label-right-bottom .ave-om-phone__body {
+	align-items: flex-end;
+}
+
+.ave-om--label-right-bottom.ave-om--label-text .ave-om-phone__label {
+	margin-bottom: 3px;
+}
+
+.ave-om--label-right-bottom.ave-om--label-pill .ave-om-phone__label {
+	margin-bottom: -2px; /* Sits on the baseline. */
+}
+
+/* Stacked: label above / below the number. */
+.ave-om--label-above .ave-om-phone__body,
+.ave-om--label-below .ave-om-phone__body {
+	flex-direction: column;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	gap: 3px;
+}
+
+.ave-om--label-above .ave-om-phone__label {
+	order: -1;
+}
+
+.ave-om--label-above .ave-om-phone {
+	align-items: flex-end;
+}
+
+.ave-om--label-above .ave-om-phone__icon {
+	margin-top: 0;
+	margin-bottom: 3px;
+}
+
+/* ---------- Pins (same markup on Leaflet and Google) ---------- */
+
+.ave-om-anchor {
+	width: 0 !important;
+	height: 0 !important;
+	overflow: visible;
+	background: none;
+	border: 0;
+}
+
+.ave-om-anchor--google {
+	position: absolute;
+}
+
+.ave-om-pin {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 0;
+	height: 0;
+	pointer-events: auto;
+}
+
+.ave-om .ave-om-pin__marker,
+.ave-om .ave-om-pin__marker:hover,
+.ave-om .ave-om-pin__marker:focus {
+	position: absolute;
+	left: calc(var(--ave-om-pin-size) / -2);
+	top: calc(var(--ave-om-pin-size) * -1.2071);
+	width: var(--ave-om-pin-size);
+	height: calc(var(--ave-om-pin-size) * 1.2071);
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	box-shadow: none;
+	cursor: pointer;
+	transform-origin: 50% 100%;
+	transition: transform 0.15s ease;
+}
+
+.ave-om-pin__shape {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: var(--ave-om-pin-size);
+	height: var(--ave-om-pin-size);
+	border-radius: 50% 50% 50% 0;
+	background: var(--ave-om-pin);
+	border: 2px solid #FFFFFF;
+	box-sizing: border-box;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+	transform: rotate(-45deg);
+	transition: background-color 0.15s ease;
+}
+
+.ave-om-pin__label {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform: rotate(45deg);
+	color: var(--ave-om-pin-text);
+	font-size: calc(var(--ave-om-pin-size) * 0.38);
+	font-weight: 600;
+	line-height: 1;
+}
+
+.ave-om-pin__label--dot::after {
+	content: "";
+	width: 30%;
+	height: 30%;
+	border-radius: 50%;
+	background: var(--ave-om-pin-text);
+}
+
+.ave-om-pin.is-active .ave-om-pin__marker {
+	transform: scale(1.18);
+}
+
+.ave-om-pin.is-active .ave-om-pin__shape {
+	background: var(--ave-om-pin-active);
+}
+
+.ave-om .ave-om-pin__marker:focus-visible {
+	outline: none;
+}
+
+.ave-om .ave-om-pin__marker:focus-visible .ave-om-pin__shape {
+	outline: 3px solid var(--ave-om-pin-active);
+	outline-offset: 2px;
+}
+
+/* Office with its own colour: keeps that colour when highlighted, a shade darker. */
+.ave-om-pin--own-color.is-active .ave-om-pin__shape {
+	filter: brightness(0.85);
+}
+
+/* ---------- Custom pin icon / logo (per office) ---------- */
+
+.ave-om .ave-om-pin__marker--icon,
+.ave-om .ave-om-pin__marker--icon:hover,
+.ave-om .ave-om-pin__marker--icon:focus {
+	top: auto;
+	bottom: 0;
+	left: 0;
+	width: auto;
+	height: var(--ave-om-icon-size, 40px);
+	transform: translateX(-50%);
+	transform-origin: 50% 100%;
+}
+
+.ave-om-pin.is-active .ave-om-pin__marker--icon {
+	transform: translateX(-50%) scale(1.15);
+}
+
+.ave-om-pin__img {
+	display: block;
+	width: auto;
+	height: 100%;
+	max-width: calc(var(--ave-om-icon-size, 40px) * 3);
+	object-fit: contain;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+	pointer-events: none;
+	user-select: none;
+}
+
+.ave-om .ave-om-pin__marker--icon:focus-visible {
+	outline: 3px solid var(--ave-om-pin-active);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+/* Layout 2 number on a custom icon. */
+.ave-om-pin__badge {
+	position: absolute;
+	top: -7px;
+	right: -9px;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	box-sizing: border-box;
+	border: 2px solid #FFFFFF;
+	border-radius: 999px;
+	background: var(--ave-om-pin);
+	color: var(--ave-om-pin-text);
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 14px;
+	text-align: center;
+}
+
+.ave-om-pin.is-active .ave-om-pin__badge {
+	background: var(--ave-om-pin-active);
+}
+
+/* Popup clears the (enlarged) icon. */
+.ave-om-pin--icon .ave-om-pop {
+	bottom: calc(var(--ave-om-icon-size, 40px) * 1.15 + 12px);
+}
+
+/* ---------- Popup (child of the pin) ---------- */
+
+.ave-om-pop {
+	position: absolute;
+	z-index: 2;
+	left: 0;
+	bottom: calc(var(--ave-om-pin-size) * 1.2071 + 12px);
+	box-sizing: border-box;
+	width: var(--ave-om-popup-width);
+	padding: 14px 16px;
+	border-radius: var(--ave-om-popup-radius);
+	background: var(--ave-om-popup-bg);
+	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.08);
+	transform: translateX(calc(-50% + var(--ave-om-shift, 0px)));
+	text-align: left;
+	cursor: default;
+	white-space: normal;
+}
+
+/* Arrow, kept pointing at the pin when the popup is shifted sideways. */
+.ave-om-pop::after {
+	content: "";
+	position: absolute;
+	left: calc(50% - var(--ave-om-shift, 0px) - 7px);
+	bottom: -7px;
+	width: 14px;
+	height: 14px;
+	background: var(--ave-om-popup-bg);
+	transform: rotate(45deg);
+}
+
+/* Invisible bridge over the gap so the cursor can travel pin → popup. */
+.ave-om-pop::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -16px;
+	height: 16px;
+}
+
+.ave-om-pop.is-below {
+	bottom: auto;
+	top: 12px;
+}
+
+.ave-om-pop.is-below::after {
+	bottom: auto;
+	top: -7px;
+}
+
+.ave-om-pop.is-below::before {
+	bottom: auto;
+	top: -16px;
+}
+
+.ave-om-pop__name {
+	position: relative;
+	z-index: 1;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.35;
+	color: #111827;
+}
+
+.ave-om-pop__address {
+	position: relative;
+	z-index: 1;
+	margin-top: 4px;
+	font-size: 14px;
+	line-height: 1.5;
+	color: #4B5563;
+}
+
+.ave-om-pop .ave-om__btn {
+	position: relative;
+	z-index: 1;
+}
+
+/* ---------- No map (missing key / load failure) ---------- */
+
+.ave-om--no-map .ave-om__map {
+	display: none;
+}
+
+.ave-om--no-map.ave-om--list .ave-om__body {
+	grid-template-columns: 1fr;
+}
+
+.ave-om--no-map .ave-om__list {
+	height: auto;
+	border-right: 0;
+}
+
+/* ---------- Editor-only notice ---------- */
+
+.ave-om-notice {
+	margin: 0 0 10px;
+	padding: 10px 12px;
+	border-left: 4px solid #B26A00;
+	background: #FFF6E5;
+	color: #4A2F00;
+	font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.ave-om-notice__meta {
+	color: #6B5428;
+}
+
+/* ---------- Mobile: list stacks under the map ---------- */
+
+@media (max-width: 767px) {
+	.ave-om--list .ave-om__body {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.ave-om--list .ave-om__map {
+		order: 1;
+	}
+
+	.ave-om--list .ave-om__list {
+		order: 2;
+		height: auto;
+		max-height: 60vh;
+		border-right: 0;
+		border-top: 1px solid var(--ave-om-divider);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ave-om *,
+	.ave-om *::before,
+	.ave-om *::after {
+		transition: none !important;
+	}
+}

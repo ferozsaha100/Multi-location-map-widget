@@ -37,8 +37,10 @@ bash tests/run.sh                                 # adds the real-browser suites
 
 1. Bump the version in `ave-multi-location-map/ave-multi-location-map.php` (plugin header and `AVE_MLM_VERSION`) and `Stable tag` in `ave-multi-location-map/readme.txt`.
 2. Add the entry to `CHANGELOG.md` and the plugin `readme.txt`.
-3. Commit, then tag and push: `git tag v2.4.2 && git push origin v2.4.2`.
-4. The *Release* workflow checks that the tag matches the plugin version, runs the tests, builds `ave-multi-location-map-2.4.2.zip` and publishes the GitHub release with the changelog entry as its notes.
+3. Commit and push to `main`, then either:
+   - push a tag: `git tag v2.4.2 && git push origin v2.4.2`, or
+   - run it from GitHub: **Actions → Release → Run workflow**, version `2.4.2`.
+4. The *Release* workflow checks that the plugin and changelog say that version, runs the tests, builds `ave-multi-location-map-2.4.2.zip` and publishes the GitHub release (creating the tag if needed) with the changelog entry as its notes.
 
 ## License
 

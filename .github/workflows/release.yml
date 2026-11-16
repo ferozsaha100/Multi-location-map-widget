@@ -1,12 +1,24 @@
 name: Release
 
-# Push a tag like v2.4.2 to test, package and publish the plugin.
+# Two ways to publish a version (the plugin header, AVE_MLM_VERSION, readme.txt
+# "Stable tag" and CHANGELOG.md must already say that version):
+#   1. Push a tag:      git tag v2.4.2 && git push origin v2.4.2
+#   2. Or run it here:  Actions → Release → Run workflow → version "2.4.2"
 on:
   push:
     tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 2.4.2 (no "v")'
+        required: true
 
 permissions:
   contents: write
+
+concurrency:
+  group: release-${{ github.event.inputs.version || github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
   tests:
@@ -19,34 +31,52 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check the tag matches the plugin version
+      - name: Resolve the version
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="${INPUT_VERSION#v}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::'$VERSION' is not a version like 2.4.2."
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "TAG=v$VERSION" >> "$GITHUB_ENV"
+
+      - name: Check the plugin says the same version
+        run: |
           MAIN=ave-multi-location-map/ave-multi-location-map.php
           HEADER=$(grep -m1 -E '^[[:space:]]*\*[[:space:]]*Version:' "$MAIN" | awk '{print $NF}')
           CONST=$(grep -oP "define\( 'AVE_MLM_VERSION', '\K[^']+" "$MAIN")
           STABLE=$(grep -m1 '^Stable tag:' ave-multi-location-map/readme.txt | awk '{print $NF}')
-          echo "tag=$TAG header=$HEADER constant=$CONST stable_tag=$STABLE"
-          if [ "$TAG" != "$HEADER" ] || [ "$TAG" != "$CONST" ] || [ "$TAG" != "$STABLE" ]; then
-            echo "::error::Tag v$TAG does not match the plugin version (header $HEADER, AVE_MLM_VERSION $CONST, Stable tag $STABLE)."
+          echo "release=$VERSION header=$HEADER constant=$CONST stable_tag=$STABLE"
+          if [ "$VERSION" != "$HEADER" ] || [ "$VERSION" != "$CONST" ] || [ "$VERSION" != "$STABLE" ]; then
+            echo "::error::Release $VERSION does not match the plugin version (header $HEADER, AVE_MLM_VERSION $CONST, Stable tag $STABLE)."
             exit 1
           fi
-          grep -q "^## \[$TAG\]" CHANGELOG.md || { echo "::error::CHANGELOG.md has no entry for $TAG."; exit 1; }
+          grep -q "^## \[$VERSION\]" CHANGELOG.md || { echo "::error::CHANGELOG.md has no entry for $VERSION."; exit 1; }
 
       - name: Build the installable zip
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          zip -qr -X "ave-multi-location-map-${VERSION}.zip" ave-multi-location-map
-          unzip -l "ave-multi-location-map-${VERSION}.zip" | tail -n 1
-          unzip -l "ave-multi-location-map-${VERSION}.zip" | awk 'NR>3 {print $4}' | grep -v '^ave-multi-location-map/' | grep -v '^$' && { echo "::error::Unexpected files outside the plugin folder."; exit 1; } || true
+          ZIP="ave-multi-location-map-${VERSION}.zip"
+          zip -qr -X "$ZIP" ave-multi-location-map
+          unzip -l "$ZIP" | tail -n 1
+          if unzip -Z1 "$ZIP" | grep -v '^ave-multi-location-map/'; then
+            echo "::error::Unexpected files outside the plugin folder."
+            exit 1
+          fi
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
 
       - name: Write release notes
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
           {
             echo "## Install"
             echo
-            echo "Download **ave-multi-location-map-${VERSION}.zip** below, then in WordPress go to **Plugins → Add New → Upload Plugin**. Updating? Choose **Replace current with uploaded**; your maps and settings are kept."
+            echo "Download **${ZIP}** below, then in WordPress go to **Plugins → Add New → Upload Plugin**. Updating? Choose **Replace current with uploaded**; your maps and settings are kept."
             echo
             echo "## What's changed"
             echo
@@ -60,10 +90,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          gh release create "$GITHUB_REF_NAME" "ave-multi-location-map-${VERSION}.zip" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "AVE Multi-Location Map ${VERSION}" \
-            --notes-file release-notes.md \
-            --verify-tag \
-            --latest
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            # Release already exists (e.g. drafted in the GitHub UI): attach the zip.
+            gh release upload "$TAG" "$ZIP" --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            # Creates the tag on this commit if it doesn't exist yet.
+            gh release create "$TAG" "$ZIP" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "AVE Multi-Location Map ${VERSION}" \
+              --notes-file release-notes.md \
+              --latest
+          fi

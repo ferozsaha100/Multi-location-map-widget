@@ -329,7 +329,7 @@ npm install --prefix tests && npx --prefix tests playwright install chromium
 bash tests/run.sh                                 # + Chromium tests (Leaflet, layouts, phones, pins, mobile)
 ```
 
-GitHub Actions runs them on every push (PHP 7.4 and 8.3). Pushing a tag such as `v2.4.1` builds the installable zip and publishes a release.
+GitHub Actions runs them on every push (PHP 7.4 and 8.3). Releases are built by the *Release* workflow: push a tag such as `v2.4.2`, or use **Actions → Release → Run workflow**. See [CONTRIBUTING.md](CONTRIBUTING.md#releasing-maintainers).
 </details>
 
 ## The original Multi-Location Map widget

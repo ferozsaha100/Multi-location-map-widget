@@ -4,7 +4,7 @@ Thanks for helping improve AVE Multi-Location Map. Bug reports, ideas and pull r
 
 ## Reporting a bug
 
-[Open a bug report](https://github.com/ferozsaha100/multi-location-map-widget/issues/new?template=bug_report.yml) and include:
+[Open a bug report](https://github.com/ferozsaha100/Multi-location-map-widget/issues/new?template=bug_report.yml) and include:
 
 - Plugin, WordPress, Elementor and PHP versions
 - Map engine (Leaflet + CARTO or Google Maps) and layout

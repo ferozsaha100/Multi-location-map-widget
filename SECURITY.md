@@ -13,7 +13,7 @@ Security fixes are released for the latest version only. Please keep the plugin 
 
 **Please don't open a public issue for security problems.**
 
-Report privately through GitHub's [private vulnerability reporting](https://github.com/ferozsaha100/multi-location-map-widget/security/advisories/new) (*Security → Report a vulnerability*). Include the affected version, the steps to reproduce, and the impact.
+Report privately through GitHub's [private vulnerability reporting](https://github.com/ferozsaha100/Multi-location-map-widget/security/advisories/new) (*Security → Report a vulnerability*). Include the affected version, the steps to reproduce, and the impact.
 
 You'll get an acknowledgement within 5 business days. Once a fix is ready, it is released, credited to you (unless you prefer otherwise), and noted in the changelog.
 

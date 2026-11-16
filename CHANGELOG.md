@@ -82,4 +82,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Changed
 - Location link renders as a styled *View Details* button, shown only when a link is set.
 
-[2.4.1]: https://github.com/ferozsaha100/multi-location-map-widget/releases/tag/v2.4.1
+[2.4.1]: https://github.com/ferozsaha100/Multi-location-map-widget/releases/tag/v2.4.1

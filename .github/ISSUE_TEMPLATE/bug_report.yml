@@ -5,8 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report this. Please check you're on the [latest release](https://github.com/ferozsaha100/multi-location-map-widget/releases/latest) first.
-        **Security issue?** Please report it privately; see [SECURITY.md](https://github.com/ferozsaha100/multi-location-map-widget/blob/main/SECURITY.md).
+        Thanks for taking the time to report this. Please check you're on the [latest release](https://github.com/ferozsaha100/Multi-location-map-widget/releases/latest) first.
+        **Security issue?** Please report it privately; see [SECURITY.md](https://github.com/ferozsaha100/Multi-location-map-widget/blob/main/SECURITY.md).
 
   - type: input
     id: plugin

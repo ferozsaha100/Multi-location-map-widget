@@ -4,14 +4,14 @@
 
 **Show every office on one map. Unlimited pins, a hover popup or a synced office list,<br>labelled phone numbers, and your own pin colours or logo.**
 
-[![Latest release](https://img.shields.io/github/v/release/ferozsaha100/multi-location-map-widget?label=release&color=0B22C7)](https://github.com/ferozsaha100/multi-location-map-widget/releases/latest)
-[![Tests](https://github.com/ferozsaha100/multi-location-map-widget/actions/workflows/tests.yml/badge.svg)](https://github.com/ferozsaha100/multi-location-map-widget/actions/workflows/tests.yml)
+[![Latest release](https://img.shields.io/github/v/release/ferozsaha100/Multi-location-map-widget?label=release&color=0B22C7)](https://github.com/ferozsaha100/Multi-location-map-widget/releases/latest)
+[![Tests](https://github.com/ferozsaha100/Multi-location-map-widget/actions/workflows/tests.yml/badge.svg)](https://github.com/ferozsaha100/Multi-location-map-widget/actions/workflows/tests.yml)
 ![WordPress 6.0+](https://img.shields.io/badge/WordPress-6.0%2B-21759B?logo=wordpress&logoColor=white)
 ![Elementor 3.5+](https://img.shields.io/badge/Elementor-3.5%2B%20(free%20or%20Pro)-92003B?logo=elementor&logoColor=white)
 ![PHP 7.4+](https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php&logoColor=white)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPLv2%2B-blue.svg)](LICENSE)
 
-[**Download the plugin**](https://github.com/ferozsaha100/multi-location-map-widget/releases/latest) · [Quick start](#quick-start) · [Documentation](#using-the-office-map-widget) · [FAQ](#faq--troubleshooting) · [Changelog](CHANGELOG.md)
+[**Download the plugin**](https://github.com/ferozsaha100/Multi-location-map-widget/releases/latest) · [Quick start](#quick-start) · [Documentation](#using-the-office-map-widget) · [FAQ](#faq--troubleshooting) · [Changelog](CHANGELOG.md)
 
 <br>
 
@@ -94,7 +94,7 @@ Built by [Agent View Digital](https://agentviewdigital.com) for real estate brok
 
 ## Installation
 
-1. Go to the [**latest release**](https://github.com/ferozsaha100/multi-location-map-widget/releases/latest) and download **`ave-multi-location-map-x.y.z.zip`** from *Assets*.
+1. Go to the [**latest release**](https://github.com/ferozsaha100/Multi-location-map-widget/releases/latest) and download **`ave-multi-location-map-x.y.z.zip`** from *Assets*.
    > Use the release zip, not GitHub's green **Code → Download ZIP** button. That one contains the whole repository (docs, tests) in a differently named folder.
 2. In WordPress, go to **Plugins → Add New → Upload Plugin**, choose the zip and click **Install Now**.
 3. Click **Activate**.
@@ -338,7 +338,7 @@ Version 1.x shipped a Google-only **Multi-Location Map** widget that looks up ad
 
 ## Contributing & support
 
-- **Bugs and feature requests:** [open an issue](https://github.com/ferozsaha100/multi-location-map-widget/issues/new/choose).
+- **Bugs and feature requests:** [open an issue](https://github.com/ferozsaha100/Multi-location-map-widget/issues/new/choose).
 - **Pull requests** are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 - **Security issues:** please follow [SECURITY.md](SECURITY.md) rather than opening a public issue.
 - **Custom real estate websites, IDX/MLS integration or setup help:** [Agent View Digital](https://agentviewdigital.com).
